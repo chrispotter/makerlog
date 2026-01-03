@@ -1,14 +1,12 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Navigation from '@/components/Navigation';
 import { apiClient } from '@/lib/api-client';
 import type { Project } from '@/lib/types';
 
 export default function Home() {
-  const router = useRouter();
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -25,16 +23,12 @@ export default function Home() {
   const [newProjectName, setNewProjectName] = useState('');
   const [newProjectDescription, setNewProjectDescription] = useState('');
 
-  useEffect(() => {
-    checkAuth();
-  }, []);
-
   const checkAuth = async () => {
     try {
       await apiClient.getMe();
       setIsAuthenticated(true);
       loadProjects();
-    } catch (err) {
+    } catch {
       setIsAuthenticated(false);
       setLoading(false);
     }
@@ -44,12 +38,17 @@ export default function Home() {
     try {
       const data = await apiClient.getProjects();
       setProjects(data);
-    } catch (err) {
+    } catch {
       setError('Failed to load projects');
     } finally {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    checkAuth();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleAuth = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -72,7 +71,7 @@ export default function Home() {
       await apiClient.logout();
       setIsAuthenticated(false);
       setProjects([]);
-    } catch (err) {
+    } catch {
       setError('Logout failed');
     }
   };
@@ -89,7 +88,7 @@ export default function Home() {
       setNewProjectDescription('');
       setShowNewProject(false);
       loadProjects();
-    } catch (err) {
+    } catch {
       setError('Failed to create project');
     }
   };

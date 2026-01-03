@@ -17,11 +17,6 @@ import (
 	_ "github.com/lib/pq"
 )
 
-type application struct {
-	db           *sql.DB
-	sessionStore *sessions.CookieStore
-}
-
 func main() {
 	// Get configuration from environment
 	dbURL := getEnv("DATABASE_URL", "postgres://postgres:postgres@localhost:5432/makerlog?sslmode=disable")
@@ -51,11 +46,6 @@ func main() {
 		HttpOnly: true,
 		Secure:   false, // Set to true in production with HTTPS
 		SameSite: http.SameSiteLaxMode,
-	}
-
-	app := &application{
-		db:           db,
-		sessionStore: sessionStore,
 	}
 
 	// Setup database queries

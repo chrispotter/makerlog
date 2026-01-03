@@ -28,10 +28,6 @@ export default function ProjectPage() {
   const [newLogContent, setNewLogContent] = useState('');
   const [selectedTaskId, setSelectedTaskId] = useState<number | undefined>();
 
-  useEffect(() => {
-    loadProjectData();
-  }, [projectId]);
-
   const loadProjectData = async () => {
     try {
       const [projectData, tasksData, logsData] = await Promise.all([
@@ -42,13 +38,17 @@ export default function ProjectPage() {
       setProject(projectData);
       setTasks(tasksData);
       setLogEntries(logsData);
-    } catch (err) {
+    } catch {
       setError('Failed to load project data');
-      console.error(err);
     } finally {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    loadProjectData();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [projectId]);
 
   const handleCreateTask = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -65,7 +65,7 @@ export default function ProjectPage() {
       setNewTaskStatus('todo');
       setShowNewTask(false);
       loadProjectData();
-    } catch (err) {
+    } catch {
       setError('Failed to create task');
     }
   };
@@ -84,7 +84,7 @@ export default function ProjectPage() {
       setSelectedTaskId(undefined);
       setShowNewLog(false);
       loadProjectData();
-    } catch (err) {
+    } catch {
       setError('Failed to create log entry');
     }
   };
@@ -100,7 +100,7 @@ export default function ProjectPage() {
         });
         loadProjectData();
       }
-    } catch (err) {
+    } catch {
       setError('Failed to update task status');
     }
   };

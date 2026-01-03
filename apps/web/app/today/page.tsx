@@ -1,34 +1,32 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
 import Navigation from '@/components/Navigation';
 import { apiClient } from '@/lib/api-client';
 import type { LogEntry } from '@/lib/types';
 
 export default function TodayPage() {
-  const router = useRouter();
   const [logEntries, setLogEntries] = useState<LogEntry[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [showNewLog, setShowNewLog] = useState(false);
   const [newLogContent, setNewLogContent] = useState('');
 
-  useEffect(() => {
-    loadTodayLogs();
-  }, []);
-
   const loadTodayLogs = async () => {
     try {
       const data = await apiClient.getTodayLogEntries();
       setLogEntries(data);
-    } catch (err) {
-      setError('Failed to load today\'s log entries');
-      console.error(err);
+    } catch {
+      setError("Failed to load today's log entries");
     } finally {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    loadTodayLogs();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleCreateLog = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -41,7 +39,7 @@ export default function TodayPage() {
       setNewLogContent('');
       setShowNewLog(false);
       loadTodayLogs();
-    } catch (err) {
+    } catch {
       setError('Failed to create log entry');
     }
   };
@@ -130,7 +128,7 @@ export default function TodayPage() {
           <div className="bg-white shadow rounded-lg">
             <div className="px-6 py-4 border-b border-gray-200">
               <h2 className="text-lg font-semibold text-gray-900">
-                Today's Logs ({logEntries.length})
+                Today&apos;s Logs ({logEntries.length})
               </h2>
             </div>
             <div className="divide-y divide-gray-200">
