@@ -53,21 +53,30 @@ git clone https://github.com/chrispotter/makerlog.git
 cd makerlog
 ```
 
-2. Start all services:
+2. Create a `.env` file in the root directory (optional, for production):
+```bash
+cp .env.example .env
+# Edit .env and set SESSION_SECRET to a strong random value
+# Generate with: openssl rand -base64 32
+```
+
+3. Start all services:
 ```bash
 make up
 # or
 docker-compose up -d
 ```
 
-3. Run database migrations:
+4. Run database migrations:
 ```bash
 make migrate-up
 ```
 
-4. Access the application:
+5. Access the application:
    - Frontend: http://localhost:3000
    - Backend API: http://localhost:8080
+
+**Note**: If you don't set SESSION_SECRET, the application will use a default value and log a warning. This is acceptable for development but should never be used in production.
 
 ### Local Development (without Docker)
 

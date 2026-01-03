@@ -23,8 +23,10 @@ services:
     container_name: makerlog-api
     environment:
       DATABASE_URL: postgres://postgres:postgres@postgres:5432/makerlog?sslmode=disable
-      # WARNING: Change this secret in production! Generate with: openssl rand -base64 32
-      SESSION_SECRET: your-secret-key-change-this-in-production
+      # IMPORTANT: Set SESSION_SECRET in your .env file or pass as environment variable
+      # Generate with: openssl rand -base64 32
+      # For development, the application will use a default value with a warning
+      SESSION_SECRET: ${SESSION_SECRET:-your-secret-key-change-this-in-production}
       PORT: 8080
       FRONTEND_URL: http://localhost:3000
     ports:

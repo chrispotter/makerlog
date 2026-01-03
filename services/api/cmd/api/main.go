@@ -25,6 +25,12 @@ func main() {
 	port := getEnv("PORT", "8080")
 	frontendURL := getEnv("FRONTEND_URL", "http://localhost:3000")
 
+	// Warn if using default session secret
+	if sessionSecret == "your-secret-key-change-this-in-production" {
+		log.Println("WARNING: Using default session secret! This is insecure for production.")
+		log.Println("Please set SESSION_SECRET environment variable to a strong random value.")
+	}
+
 	// Connect to database
 	db, err := sql.Open("postgres", dbURL)
 	if err != nil {
