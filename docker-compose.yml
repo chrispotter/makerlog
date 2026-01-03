@@ -1,0 +1,58 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: makerlog-postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: makerlog
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  api:
+    build:
+      context: ./services/api
+      dockerfile: Dockerfile
+    container_name: makerlog-api
+    environment:
+      DATABASE_URL: postgres://postgres:postgres@postgres:5432/makerlog?sslmode=disable
+      # IMPORTANT: Set SESSION_SECRET in your .env file or pass as environment variable
+      # Generate with: openssl rand -base64 32
+      # For development, the application will use a default value with a warning
+      SESSION_SECRET: ${SESSION_SECRET:-your-secret-key-change-this-in-production}
+      PORT: 8080
+      FRONTEND_URL: http://localhost:3000
+    ports:
+      - "8080:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      - ./services/api:/app
+    command: ["./wait-for-it.sh", "postgres:5432", "--", "./makerlog"]
+
+  web:
+    build:
+      context: ./apps/web
+      dockerfile: Dockerfile
+    container_name: makerlog-web
+    environment:
+      NEXT_PUBLIC_API_URL: http://localhost:8080
+    ports:
+      - "3000:3000"
+    depends_on:
+      - api
+    volumes:
+      - ./apps/web:/app
+      - /app/node_modules
+      - /app/.next
+
+volumes:
+  postgres_data:
