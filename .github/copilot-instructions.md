@@ -2,12 +2,12 @@
 
 ## Project Overview
 
-Makerlog is a Go-based project. This file provides guidance to GitHub Copilot when working with this codebase.
+Makerlog is a project for tracking maker activities and progress. This file provides guidance to GitHub Copilot when working with this codebase.
 
 ## Tech Stack
 
-- **Language**: Go
-- **Build System**: Standard Go tooling (`go build`, `go test`)
+- **Language**: Go (planned/in development)
+- **Build System**: Standard Go tooling (`go build`, `go test`) when Go code is added
 
 ## Coding Conventions
 
