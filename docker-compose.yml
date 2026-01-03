@@ -23,6 +23,7 @@ services:
     container_name: makerlog-api
     environment:
       DATABASE_URL: postgres://postgres:postgres@postgres:5432/makerlog?sslmode=disable
+      # WARNING: Change this secret in production! Generate with: openssl rand -base64 32
       SESSION_SECRET: your-secret-key-change-this-in-production
       PORT: 8080
       FRONTEND_URL: http://localhost:3000
@@ -33,7 +34,7 @@ services:
         condition: service_healthy
     volumes:
       - ./services/api:/app
-    command: ["./wait-for-it.sh", "postgres:5432", "--", "/app/makerlog"]
+    command: ["./wait-for-it.sh", "postgres:5432", "--", "./makerlog"]
 
   web:
     build:

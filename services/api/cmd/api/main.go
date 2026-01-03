@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"database/sql"
 	"log"
 	"net/http"
@@ -31,8 +32,10 @@ func main() {
 	}
 	defer db.Close()
 
-	// Test database connection
-	if err := db.Ping(); err != nil {
+	// Test database connection with timeout
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	if err := db.PingContext(ctx); err != nil {
 		log.Fatal("Failed to ping database:", err)
 	}
 

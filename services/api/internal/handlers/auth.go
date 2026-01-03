@@ -62,7 +62,11 @@ func (h *AuthHandler) Register(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Create session
-	session, _ := h.sessionStore.Get(r, "makerlog-session")
+	session, err := h.sessionStore.Get(r, "makerlog-session")
+	if err != nil {
+		http.Error(w, "Failed to get session", http.StatusInternalServerError)
+		return
+	}
 	session.Values["user_id"] = user.ID
 	if err := session.Save(r, w); err != nil {
 		http.Error(w, "Failed to create session", http.StatusInternalServerError)
@@ -104,7 +108,11 @@ func (h *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Create session
-	session, _ := h.sessionStore.Get(r, "makerlog-session")
+	session, err := h.sessionStore.Get(r, "makerlog-session")
+	if err != nil {
+		http.Error(w, "Failed to get session", http.StatusInternalServerError)
+		return
+	}
 	session.Values["user_id"] = user.ID
 	if err := session.Save(r, w); err != nil {
 		http.Error(w, "Failed to create session", http.StatusInternalServerError)
@@ -116,7 +124,11 @@ func (h *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *AuthHandler) Logout(w http.ResponseWriter, r *http.Request) {
-	session, _ := h.sessionStore.Get(r, "makerlog-session")
+	session, err := h.sessionStore.Get(r, "makerlog-session")
+	if err != nil {
+		http.Error(w, "Failed to get session", http.StatusInternalServerError)
+		return
+	}
 	session.Values["user_id"] = 0
 	session.Options.MaxAge = -1
 	if err := session.Save(r, w); err != nil {

@@ -197,15 +197,18 @@ Run `make help` to see all available commands:
 ## Environment Variables
 
 ### Backend (`services/api/.env`)
-```
+```bash
 DATABASE_URL=postgres://postgres:postgres@localhost:5432/makerlog?sslmode=disable
+# IMPORTANT: Generate a strong secret for production with: openssl rand -base64 32
 SESSION_SECRET=your-secret-key-change-this-in-production
 PORT=8080
 FRONTEND_URL=http://localhost:3000
 ```
 
+**Security Note**: Always use a strong, randomly generated SESSION_SECRET in production. Never commit secrets to version control.
+
 ### Frontend (`apps/web/.env.local`)
-```
+```bash
 NEXT_PUBLIC_API_URL=http://localhost:8080
 ```
 
