@@ -129,7 +129,7 @@ func (h *AuthHandler) Logout(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Failed to get session", http.StatusInternalServerError)
 		return
 	}
-	session.Values["user_id"] = 0
+	session.Values["user_id"] = ""
 	session.Options.MaxAge = -1
 	if err := session.Save(r, w); err != nil {
 		http.Error(w, "Failed to logout", http.StatusInternalServerError)

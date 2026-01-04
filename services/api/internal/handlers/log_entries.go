@@ -3,7 +3,6 @@ package handlers
 import (
 	"encoding/json"
 	"net/http"
-	"strconv"
 	"time"
 
 	"github.com/chrispotter/makerlog/services/api/internal/database"
@@ -28,12 +27,9 @@ func (h *LogEntryHandler) List(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Optional project_id filter
-	var projectID *int
+	var projectID *string
 	if projectIDStr := r.URL.Query().Get("project_id"); projectIDStr != "" {
-		id, err := strconv.Atoi(projectIDStr)
-		if err == nil {
-			projectID = &id
-		}
+		projectID = &projectIDStr
 	}
 
 	logEntries, err := h.queries.ListLogEntries(userID, projectID)
@@ -95,9 +91,8 @@ func (h *LogEntryHandler) Get(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	idStr := chi.URLParam(r, "id")
-	id, err := strconv.Atoi(idStr)
-	if err != nil {
+	id := chi.URLParam(r, "id")
+	if id == "" {
 		http.Error(w, "Invalid log entry ID", http.StatusBadRequest)
 		return
 	}
@@ -123,9 +118,8 @@ func (h *LogEntryHandler) Update(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	idStr := chi.URLParam(r, "id")
-	id, err := strconv.Atoi(idStr)
-	if err != nil {
+	id := chi.URLParam(r, "id")
+	if id == "" {
 		http.Error(w, "Invalid log entry ID", http.StatusBadRequest)
 		return
 	}
@@ -169,9 +163,8 @@ func (h *LogEntryHandler) Delete(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	idStr := chi.URLParam(r, "id")
-	id, err := strconv.Atoi(idStr)
-	if err != nil {
+	id := chi.URLParam(r, "id")
+	if id == "" {
 		http.Error(w, "Invalid log entry ID", http.StatusBadRequest)
 		return
 	}

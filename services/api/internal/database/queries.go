@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/chrispotter/makerlog/services/api/internal/models"
+	"github.com/google/uuid"
 )
 
 type Queries struct {
@@ -18,11 +19,12 @@ func New(db *sql.DB) *Queries {
 // User queries
 func (q *Queries) CreateUser(email, passwordHash, name string) (*models.User, error) {
 	var user models.User
+	id := uuid.New().String()
 	err := q.db.QueryRow(`
-		INSERT INTO users (email, password_hash, name, created_at, updated_at)
-		VALUES ($1, $2, $3, NOW(), NOW())
+		INSERT INTO users (id, email, password_hash, name, created_at, updated_at)
+		VALUES ($1, $2, $3, $4, NOW(), NOW())
 		RETURNING id, email, password_hash, name, created_at, updated_at
-	`, email, passwordHash, name).Scan(
+	`, id, email, passwordHash, name).Scan(
 		&user.ID, &user.Email, &user.PasswordHash, &user.Name, &user.CreatedAt, &user.UpdatedAt,
 	)
 	return &user, err
@@ -42,7 +44,7 @@ func (q *Queries) GetUserByEmail(email string) (*models.User, error) {
 	return &user, err
 }
 
-func (q *Queries) GetUserByID(id int) (*models.User, error) {
+func (q *Queries) GetUserByID(id string) (*models.User, error) {
 	var user models.User
 	err := q.db.QueryRow(`
 		SELECT id, email, password_hash, name, created_at, updated_at
@@ -57,19 +59,20 @@ func (q *Queries) GetUserByID(id int) (*models.User, error) {
 }
 
 // Project queries
-func (q *Queries) CreateProject(userID int, name, description string) (*models.Project, error) {
+func (q *Queries) CreateProject(userID string, name, description string) (*models.Project, error) {
 	var project models.Project
+	id := uuid.New().String()
 	err := q.db.QueryRow(`
-		INSERT INTO projects (user_id, name, description, created_at, updated_at)
-		VALUES ($1, $2, $3, NOW(), NOW())
+		INSERT INTO projects (id, user_id, name, description, created_at, updated_at)
+		VALUES ($1, $2, $3, $4, NOW(), NOW())
 		RETURNING id, user_id, name, description, created_at, updated_at
-	`, userID, name, description).Scan(
+	`, id, userID, name, description).Scan(
 		&project.ID, &project.UserID, &project.Name, &project.Description, &project.CreatedAt, &project.UpdatedAt,
 	)
 	return &project, err
 }
 
-func (q *Queries) GetProject(id, userID int) (*models.Project, error) {
+func (q *Queries) GetProject(id, userID string) (*models.Project, error) {
 	var project models.Project
 	err := q.db.QueryRow(`
 		SELECT id, user_id, name, description, created_at, updated_at
@@ -83,7 +86,7 @@ func (q *Queries) GetProject(id, userID int) (*models.Project, error) {
 	return &project, err
 }
 
-func (q *Queries) ListProjects(userID int) ([]models.Project, error) {
+func (q *Queries) ListProjects(userID string) ([]models.Project, error) {
 	rows, err := q.db.Query(`
 		SELECT id, user_id, name, description, created_at, updated_at
 		FROM projects WHERE user_id = $1
@@ -107,7 +110,7 @@ func (q *Queries) ListProjects(userID int) ([]models.Project, error) {
 	return projects, rows.Err()
 }
 
-func (q *Queries) UpdateProject(id, userID int, name, description string) (*models.Project, error) {
+func (q *Queries) UpdateProject(id, userID string, name, description string) (*models.Project, error) {
 	var project models.Project
 	err := q.db.QueryRow(`
 		UPDATE projects
@@ -123,7 +126,7 @@ func (q *Queries) UpdateProject(id, userID int, name, description string) (*mode
 	return &project, err
 }
 
-func (q *Queries) DeleteProject(id, userID int) error {
+func (q *Queries) DeleteProject(id, userID string) error {
 	result, err := q.db.Exec(`
 		DELETE FROM projects WHERE id = $1 AND user_id = $2
 	`, id, userID)
@@ -138,19 +141,20 @@ func (q *Queries) DeleteProject(id, userID int) error {
 }
 
 // Task queries
-func (q *Queries) CreateTask(userID, projectID int, title, description, status string) (*models.Task, error) {
+func (q *Queries) CreateTask(userID, projectID string, title, description, status string) (*models.Task, error) {
 	var task models.Task
+	id := uuid.New().String()
 	err := q.db.QueryRow(`
-		INSERT INTO tasks (user_id, project_id, title, description, status, created_at, updated_at)
-		VALUES ($1, $2, $3, $4, $5, NOW(), NOW())
+		INSERT INTO tasks (id, user_id, project_id, title, description, status, created_at, updated_at)
+		VALUES ($1, $2, $3, $4, $5, $6, NOW(), NOW())
 		RETURNING id, user_id, project_id, title, description, status, created_at, updated_at
-	`, userID, projectID, title, description, status).Scan(
+	`, id, userID, projectID, title, description, status).Scan(
 		&task.ID, &task.UserID, &task.ProjectID, &task.Title, &task.Description, &task.Status, &task.CreatedAt, &task.UpdatedAt,
 	)
 	return &task, err
 }
 
-func (q *Queries) GetTask(id, userID int) (*models.Task, error) {
+func (q *Queries) GetTask(id, userID string) (*models.Task, error) {
 	var task models.Task
 	err := q.db.QueryRow(`
 		SELECT id, user_id, project_id, title, description, status, created_at, updated_at
@@ -164,7 +168,7 @@ func (q *Queries) GetTask(id, userID int) (*models.Task, error) {
 	return &task, err
 }
 
-func (q *Queries) ListTasks(userID int, projectID *int) ([]models.Task, error) {
+func (q *Queries) ListTasks(userID string, projectID *string) ([]models.Task, error) {
 	var rows *sql.Rows
 	var err error
 
@@ -200,7 +204,7 @@ func (q *Queries) ListTasks(userID int, projectID *int) ([]models.Task, error) {
 	return tasks, rows.Err()
 }
 
-func (q *Queries) UpdateTask(id, userID int, title, description, status string) (*models.Task, error) {
+func (q *Queries) UpdateTask(id, userID string, title, description, status string) (*models.Task, error) {
 	var task models.Task
 	err := q.db.QueryRow(`
 		UPDATE tasks
@@ -216,7 +220,7 @@ func (q *Queries) UpdateTask(id, userID int, title, description, status string) 
 	return &task, err
 }
 
-func (q *Queries) DeleteTask(id, userID int) error {
+func (q *Queries) DeleteTask(id, userID string) error {
 	result, err := q.db.Exec(`
 		DELETE FROM tasks WHERE id = $1 AND user_id = $2
 	`, id, userID)
@@ -231,19 +235,20 @@ func (q *Queries) DeleteTask(id, userID int) error {
 }
 
 // Log entry queries
-func (q *Queries) CreateLogEntry(userID int, taskID, projectID *int, content string, logDate time.Time) (*models.LogEntry, error) {
+func (q *Queries) CreateLogEntry(userID string, taskID, projectID *string, content string, logDate time.Time) (*models.LogEntry, error) {
 	var logEntry models.LogEntry
+	id := uuid.New().String()
 	err := q.db.QueryRow(`
-		INSERT INTO log_entries (user_id, task_id, project_id, content, log_date, created_at, updated_at)
-		VALUES ($1, $2, $3, $4, $5, NOW(), NOW())
+		INSERT INTO log_entries (id, user_id, task_id, project_id, content, log_date, created_at, updated_at)
+		VALUES ($1, $2, $3, $4, $5, $6, NOW(), NOW())
 		RETURNING id, user_id, task_id, project_id, content, log_date, created_at, updated_at
-	`, userID, taskID, projectID, content, logDate).Scan(
+	`, id, userID, taskID, projectID, content, logDate).Scan(
 		&logEntry.ID, &logEntry.UserID, &logEntry.TaskID, &logEntry.ProjectID, &logEntry.Content, &logEntry.LogDate, &logEntry.CreatedAt, &logEntry.UpdatedAt,
 	)
 	return &logEntry, err
 }
 
-func (q *Queries) GetLogEntry(id, userID int) (*models.LogEntry, error) {
+func (q *Queries) GetLogEntry(id, userID string) (*models.LogEntry, error) {
 	var logEntry models.LogEntry
 	err := q.db.QueryRow(`
 		SELECT id, user_id, task_id, project_id, content, log_date, created_at, updated_at
@@ -257,7 +262,7 @@ func (q *Queries) GetLogEntry(id, userID int) (*models.LogEntry, error) {
 	return &logEntry, err
 }
 
-func (q *Queries) ListLogEntries(userID int, projectID *int) ([]models.LogEntry, error) {
+func (q *Queries) ListLogEntries(userID string, projectID *string) ([]models.LogEntry, error) {
 	var rows *sql.Rows
 	var err error
 
@@ -293,7 +298,7 @@ func (q *Queries) ListLogEntries(userID int, projectID *int) ([]models.LogEntry,
 	return logEntries, rows.Err()
 }
 
-func (q *Queries) GetTodayLogEntries(userID int, date time.Time) ([]models.LogEntry, error) {
+func (q *Queries) GetTodayLogEntries(userID string, date time.Time) ([]models.LogEntry, error) {
 	rows, err := q.db.Query(`
 		SELECT id, user_id, task_id, project_id, content, log_date, created_at, updated_at
 		FROM log_entries
@@ -318,7 +323,7 @@ func (q *Queries) GetTodayLogEntries(userID int, date time.Time) ([]models.LogEn
 	return logEntries, rows.Err()
 }
 
-func (q *Queries) UpdateLogEntry(id, userID int, content string, logDate time.Time) (*models.LogEntry, error) {
+func (q *Queries) UpdateLogEntry(id, userID string, content string, logDate time.Time) (*models.LogEntry, error) {
 	var logEntry models.LogEntry
 	err := q.db.QueryRow(`
 		UPDATE log_entries
@@ -334,7 +339,7 @@ func (q *Queries) UpdateLogEntry(id, userID int, content string, logDate time.Ti
 	return &logEntry, err
 }
 
-func (q *Queries) DeleteLogEntry(id, userID int) error {
+func (q *Queries) DeleteLogEntry(id, userID string) error {
 	result, err := q.db.Exec(`
 		DELETE FROM log_entries WHERE id = $1 AND user_id = $2
 	`, id, userID)

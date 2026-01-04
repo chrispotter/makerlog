@@ -5,7 +5,7 @@ import (
 )
 
 type User struct {
-	ID           int       `json:"id" db:"id"`
+	ID           string    `json:"id" db:"id"`
 	Email        string    `json:"email" db:"email"`
 	PasswordHash string    `json:"-" db:"password_hash"`
 	Name         string    `json:"name" db:"name"`
@@ -14,8 +14,8 @@ type User struct {
 }
 
 type Project struct {
-	ID          int       `json:"id" db:"id"`
-	UserID      int       `json:"user_id" db:"user_id"`
+	ID          string    `json:"id" db:"id"`
+	UserID      string    `json:"user_id" db:"user_id"`
 	Name        string    `json:"name" db:"name"`
 	Description string    `json:"description" db:"description"`
 	CreatedAt   time.Time `json:"created_at" db:"created_at"`
@@ -23,9 +23,9 @@ type Project struct {
 }
 
 type Task struct {
-	ID          int       `json:"id" db:"id"`
-	ProjectID   int       `json:"project_id" db:"project_id"`
-	UserID      int       `json:"user_id" db:"user_id"`
+	ID          string    `json:"id" db:"id"`
+	ProjectID   string    `json:"project_id" db:"project_id"`
+	UserID      string    `json:"user_id" db:"user_id"`
 	Title       string    `json:"title" db:"title"`
 	Description string    `json:"description" db:"description"`
 	Status      string    `json:"status" db:"status"` // todo, in_progress, done
@@ -34,10 +34,10 @@ type Task struct {
 }
 
 type LogEntry struct {
-	ID        int       `json:"id" db:"id"`
-	UserID    int       `json:"user_id" db:"user_id"`
-	TaskID    *int      `json:"task_id,omitempty" db:"task_id"`
-	ProjectID *int      `json:"project_id,omitempty" db:"project_id"`
+	ID        string    `json:"id" db:"id"`
+	UserID    string    `json:"user_id" db:"user_id"`
+	TaskID    *string   `json:"task_id,omitempty" db:"task_id"`
+	ProjectID *string   `json:"project_id,omitempty" db:"project_id"`
 	Content   string    `json:"content" db:"content"`
 	LogDate   time.Time `json:"log_date" db:"log_date"`
 	CreatedAt time.Time `json:"created_at" db:"created_at"`
@@ -67,7 +67,7 @@ type UpdateProjectRequest struct {
 }
 
 type CreateTaskRequest struct {
-	ProjectID   int    `json:"project_id"`
+	ProjectID   string `json:"project_id"`
 	Title       string `json:"title"`
 	Description string `json:"description"`
 	Status      string `json:"status"`
@@ -80,10 +80,10 @@ type UpdateTaskRequest struct {
 }
 
 type CreateLogEntryRequest struct {
-	TaskID    *int   `json:"task_id,omitempty"`
-	ProjectID *int   `json:"project_id,omitempty"`
-	Content   string `json:"content"`
-	LogDate   string `json:"log_date"` // Format: YYYY-MM-DD
+	TaskID    *string `json:"task_id,omitempty"`
+	ProjectID *string `json:"project_id,omitempty"`
+	Content   string  `json:"content"`
+	LogDate   string  `json:"log_date"` // Format: YYYY-MM-DD
 }
 
 type UpdateLogEntryRequest struct {
