@@ -30,6 +30,10 @@ func (h *LogEntryHandler) List(w http.ResponseWriter, r *http.Request) {
 	// Optional project_id filter
 	var projectID *string
 	if projectIDStr := r.URL.Query().Get("project_id"); projectIDStr != "" {
+		if _, err := uuid.Parse(projectIDStr); err != nil {
+			http.Error(w, "Invalid project_id format", http.StatusBadRequest)
+			return
+		}
 		projectID = &projectIDStr
 	}
 
