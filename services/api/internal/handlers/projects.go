@@ -8,6 +8,7 @@ import (
 	"github.com/chrispotter/makerlog/services/api/internal/middleware"
 	"github.com/chrispotter/makerlog/services/api/internal/models"
 	"github.com/go-chi/chi/v5"
+	"github.com/google/uuid"
 )
 
 type ProjectHandler struct {
@@ -72,8 +73,8 @@ func (h *ProjectHandler) Get(w http.ResponseWriter, r *http.Request) {
 	}
 
 	id := chi.URLParam(r, "id")
-	if id == "" {
-		http.Error(w, "Invalid project ID", http.StatusBadRequest)
+	if _, err := uuid.Parse(id); err != nil {
+		http.Error(w, "Invalid project ID format", http.StatusBadRequest)
 		return
 	}
 
@@ -99,8 +100,8 @@ func (h *ProjectHandler) Update(w http.ResponseWriter, r *http.Request) {
 	}
 
 	id := chi.URLParam(r, "id")
-	if id == "" {
-		http.Error(w, "Invalid project ID", http.StatusBadRequest)
+	if _, err := uuid.Parse(id); err != nil {
+		http.Error(w, "Invalid project ID format", http.StatusBadRequest)
 		return
 	}
 
@@ -137,8 +138,8 @@ func (h *ProjectHandler) Delete(w http.ResponseWriter, r *http.Request) {
 	}
 
 	id := chi.URLParam(r, "id")
-	if id == "" {
-		http.Error(w, "Invalid project ID", http.StatusBadRequest)
+	if _, err := uuid.Parse(id); err != nil {
+		http.Error(w, "Invalid project ID format", http.StatusBadRequest)
 		return
 	}
 

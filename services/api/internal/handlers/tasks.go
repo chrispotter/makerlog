@@ -8,6 +8,7 @@ import (
 	"github.com/chrispotter/makerlog/services/api/internal/middleware"
 	"github.com/chrispotter/makerlog/services/api/internal/models"
 	"github.com/go-chi/chi/v5"
+	"github.com/google/uuid"
 )
 
 type TaskHandler struct {
@@ -82,8 +83,8 @@ func (h *TaskHandler) Get(w http.ResponseWriter, r *http.Request) {
 	}
 
 	id := chi.URLParam(r, "id")
-	if id == "" {
-		http.Error(w, "Invalid task ID", http.StatusBadRequest)
+	if _, err := uuid.Parse(id); err != nil {
+		http.Error(w, "Invalid task ID format", http.StatusBadRequest)
 		return
 	}
 
@@ -109,8 +110,8 @@ func (h *TaskHandler) Update(w http.ResponseWriter, r *http.Request) {
 	}
 
 	id := chi.URLParam(r, "id")
-	if id == "" {
-		http.Error(w, "Invalid task ID", http.StatusBadRequest)
+	if _, err := uuid.Parse(id); err != nil {
+		http.Error(w, "Invalid task ID format", http.StatusBadRequest)
 		return
 	}
 
@@ -147,8 +148,8 @@ func (h *TaskHandler) Delete(w http.ResponseWriter, r *http.Request) {
 	}
 
 	id := chi.URLParam(r, "id")
-	if id == "" {
-		http.Error(w, "Invalid task ID", http.StatusBadRequest)
+	if _, err := uuid.Parse(id); err != nil {
+		http.Error(w, "Invalid task ID format", http.StatusBadRequest)
 		return
 	}
 

@@ -1,5 +1,11 @@
 -- +goose Up
 -- +goose StatementBegin
+-- WARNING: This migration is intended for fresh database schemas or when existing data can be lost.
+-- Converting from auto-incrementing integers to UUIDs will generate new IDs for all existing records.
+-- Foreign key relationships will need to be re-established after this migration for existing data.
+-- For production databases with existing data, consider creating a custom migration that preserves
+-- relationships by creating temporary mapping tables.
+
 -- Enable UUID extension
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
@@ -16,7 +22,8 @@ ALTER TABLE projects DROP CONSTRAINT IF EXISTS projects_pkey CASCADE;
 ALTER TABLE projects ADD COLUMN id_new UUID DEFAULT uuid_generate_v4();
 ALTER TABLE projects ADD COLUMN user_id_new UUID;
 UPDATE projects SET id_new = uuid_generate_v4();
--- Note: user_id_new will be populated through application logic or manual mapping
+-- WARNING: user_id_new will remain NULL, breaking referential integrity for existing data
+-- In a production environment, you would need to map old user IDs to new UUIDs
 ALTER TABLE projects DROP COLUMN id;
 ALTER TABLE projects DROP COLUMN user_id;
 ALTER TABLE projects RENAME COLUMN id_new TO id;
@@ -31,7 +38,8 @@ ALTER TABLE tasks ADD COLUMN id_new UUID DEFAULT uuid_generate_v4();
 ALTER TABLE tasks ADD COLUMN user_id_new UUID;
 ALTER TABLE tasks ADD COLUMN project_id_new UUID;
 UPDATE tasks SET id_new = uuid_generate_v4();
--- Note: user_id_new and project_id_new will be populated through application logic or manual mapping
+-- WARNING: user_id_new and project_id_new will remain NULL, breaking referential integrity for existing data
+-- In a production environment, you would need to map old IDs to new UUIDs
 ALTER TABLE tasks DROP COLUMN id;
 ALTER TABLE tasks DROP COLUMN user_id;
 ALTER TABLE tasks DROP COLUMN project_id;
@@ -51,7 +59,8 @@ ALTER TABLE log_entries ADD COLUMN user_id_new UUID;
 ALTER TABLE log_entries ADD COLUMN task_id_new UUID;
 ALTER TABLE log_entries ADD COLUMN project_id_new UUID;
 UPDATE log_entries SET id_new = uuid_generate_v4();
--- Note: foreign key columns will be populated through application logic or manual mapping
+-- WARNING: Foreign key columns will remain NULL, breaking referential integrity for existing data
+-- In a production environment, you would need to map old IDs to new UUIDs
 ALTER TABLE log_entries DROP COLUMN id;
 ALTER TABLE log_entries DROP COLUMN user_id;
 ALTER TABLE log_entries DROP COLUMN task_id;
