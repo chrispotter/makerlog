@@ -64,6 +64,11 @@ func (h *TaskHandler) Create(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if _, err := uuid.Parse(req.ProjectID); err != nil {
+		http.Error(w, "Invalid project_id format", http.StatusBadRequest)
+		return
+	}
+
 	if req.Status == "" {
 		req.Status = "todo"
 	}

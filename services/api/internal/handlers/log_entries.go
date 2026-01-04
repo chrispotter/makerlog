@@ -65,6 +65,20 @@ func (h *LogEntryHandler) Create(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Validate optional UUID fields
+	if req.TaskID != nil {
+		if _, err := uuid.Parse(*req.TaskID); err != nil {
+			http.Error(w, "Invalid task_id format", http.StatusBadRequest)
+			return
+		}
+	}
+	if req.ProjectID != nil {
+		if _, err := uuid.Parse(*req.ProjectID); err != nil {
+			http.Error(w, "Invalid project_id format", http.StatusBadRequest)
+			return
+		}
+	}
+
 	// Parse log date
 	var logDate time.Time
 	var err error
