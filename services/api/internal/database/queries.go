@@ -94,7 +94,7 @@ func (q *Queries) ListProjects(userID string) ([]models.Project, error) {
 	}
 	defer func() {
 		if err := rows.Close(); err != nil {
-			// Log error but don't fail the operation
+			// Error is intentionally ignored
 			_ = err
 		}
 	}()
