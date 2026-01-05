@@ -54,7 +54,9 @@ jobs:
         coverage=$(go tool cover -func=coverage.out | grep total | awk '{print $3}' | sed 's/%//')
         echo "Total coverage: ${coverage}%"
         # Don't fail on low coverage for now, but report it
-        if (( $(echo "$coverage < 50" | bc -l) )); then
+        # Remove decimal point for integer comparison
+        coverage_int=${coverage%.*}
+        if [ "$coverage_int" -lt 50 ]; then
           echo "::warning::Test coverage is below 50% (${coverage}%)"
         fi
 
