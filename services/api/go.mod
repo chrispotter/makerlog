@@ -1,6 +1,8 @@
 module github.com/chrispotter/makerlog/services/api
 
-go 1.24.11
+go 1.24.0
+
+toolchain go1.24.11
 
 require (
 	github.com/go-chi/chi/v5 v5.2.3

@@ -43,8 +43,7 @@ func (h *LogEntryHandler) List(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(logEntries)
+	writeJSON(w, logEntries)
 }
 
 func (h *LogEntryHandler) Create(w http.ResponseWriter, r *http.Request) {
@@ -98,9 +97,8 @@ func (h *LogEntryHandler) Create(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
-	json.NewEncoder(w).Encode(logEntry)
+	writeJSON(w, logEntry)
 }
 
 func (h *LogEntryHandler) Get(w http.ResponseWriter, r *http.Request) {
@@ -126,8 +124,7 @@ func (h *LogEntryHandler) Get(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(logEntry)
+	writeJSON(w, logEntry)
 }
 
 func (h *LogEntryHandler) Update(w http.ResponseWriter, r *http.Request) {
@@ -171,8 +168,7 @@ func (h *LogEntryHandler) Update(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(logEntry)
+	writeJSON(w, logEntry)
 }
 
 func (h *LogEntryHandler) Delete(w http.ResponseWriter, r *http.Request) {
@@ -211,6 +207,5 @@ func (h *LogEntryHandler) Today(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(logEntries)
+	writeJSON(w, logEntries)
 }

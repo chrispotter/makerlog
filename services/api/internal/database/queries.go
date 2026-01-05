@@ -92,7 +92,12 @@ func (q *Queries) ListProjects(userID string) ([]models.Project, error) {
 	if err != nil {
 		return nil, err
 	}
-	defer rows.Close()
+	defer func() {
+		if err := rows.Close(); err != nil {
+			// Error is intentionally ignored
+			_ = err
+		}
+	}()
 
 	var projects []models.Project
 	for rows.Next() {
@@ -130,7 +135,10 @@ func (q *Queries) DeleteProject(id, userID string) error {
 	if err != nil {
 		return err
 	}
-	rows, _ := result.RowsAffected()
+	rows, err := result.RowsAffected()
+	if err != nil {
+		return err
+	}
 	if rows == 0 {
 		return sql.ErrNoRows
 	}
@@ -185,7 +193,11 @@ func (q *Queries) ListTasks(userID string, projectID *string) ([]models.Task, er
 	if err != nil {
 		return nil, err
 	}
-	defer rows.Close()
+	defer func() {
+		if err := rows.Close(); err != nil {
+			_ = err
+		}
+	}()
 
 	var tasks []models.Task
 	for rows.Next() {
@@ -223,7 +235,10 @@ func (q *Queries) DeleteTask(id, userID string) error {
 	if err != nil {
 		return err
 	}
-	rows, _ := result.RowsAffected()
+	rows, err := result.RowsAffected()
+	if err != nil {
+		return err
+	}
 	if rows == 0 {
 		return sql.ErrNoRows
 	}
@@ -278,7 +293,11 @@ func (q *Queries) ListLogEntries(userID string, projectID *string) ([]models.Log
 	if err != nil {
 		return nil, err
 	}
-	defer rows.Close()
+	defer func() {
+		if err := rows.Close(); err != nil {
+			_ = err
+		}
+	}()
 
 	var logEntries []models.LogEntry
 	for rows.Next() {
@@ -303,7 +322,11 @@ func (q *Queries) GetTodayLogEntries(userID string, date time.Time) ([]models.Lo
 	if err != nil {
 		return nil, err
 	}
-	defer rows.Close()
+	defer func() {
+		if err := rows.Close(); err != nil {
+			_ = err
+		}
+	}()
 
 	var logEntries []models.LogEntry
 	for rows.Next() {
@@ -341,7 +364,10 @@ func (q *Queries) DeleteLogEntry(id, userID string) error {
 	if err != nil {
 		return err
 	}
-	rows, _ := result.RowsAffected()
+	rows, err := result.RowsAffected()
+	if err != nil {
+		return err
+	}
 	if rows == 0 {
 		return sql.ErrNoRows
 	}
