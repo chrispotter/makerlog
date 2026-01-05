@@ -3,12 +3,12 @@ package handlers
 import (
 	"encoding/json"
 	"net/http"
-	"strconv"
 
 	"github.com/chrispotter/makerlog/services/api/internal/database"
 	"github.com/chrispotter/makerlog/services/api/internal/middleware"
 	"github.com/chrispotter/makerlog/services/api/internal/models"
 	"github.com/go-chi/chi/v5"
+	"github.com/google/uuid"
 )
 
 type TaskHandler struct {
@@ -27,12 +27,13 @@ func (h *TaskHandler) List(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Optional project_id filter
-	var projectID *int
+	var projectID *string
 	if projectIDStr := r.URL.Query().Get("project_id"); projectIDStr != "" {
-		id, err := strconv.Atoi(projectIDStr)
-		if err == nil {
-			projectID = &id
+		if _, err := uuid.Parse(projectIDStr); err != nil {
+			http.Error(w, "Invalid project_id format", http.StatusBadRequest)
+			return
 		}
+		projectID = &projectIDStr
 	}
 
 	tasks, err := h.queries.ListTasks(userID, projectID)
@@ -63,6 +64,11 @@ func (h *TaskHandler) Create(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if _, err := uuid.Parse(req.ProjectID); err != nil {
+		http.Error(w, "Invalid project_id format", http.StatusBadRequest)
+		return
+	}
+
 	if req.Status == "" {
 		req.Status = "todo"
 	}
@@ -85,10 +91,9 @@ func (h *TaskHandler) Get(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	idStr := chi.URLParam(r, "id")
-	id, err := strconv.Atoi(idStr)
-	if err != nil {
-		http.Error(w, "Invalid task ID", http.StatusBadRequest)
+	id := chi.URLParam(r, "id")
+	if _, err := uuid.Parse(id); err != nil {
+		http.Error(w, "Invalid task ID format", http.StatusBadRequest)
 		return
 	}
 
@@ -113,10 +118,9 @@ func (h *TaskHandler) Update(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	idStr := chi.URLParam(r, "id")
-	id, err := strconv.Atoi(idStr)
-	if err != nil {
-		http.Error(w, "Invalid task ID", http.StatusBadRequest)
+	id := chi.URLParam(r, "id")
+	if _, err := uuid.Parse(id); err != nil {
+		http.Error(w, "Invalid task ID format", http.StatusBadRequest)
 		return
 	}
 
@@ -152,10 +156,9 @@ func (h *TaskHandler) Delete(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	idStr := chi.URLParam(r, "id")
-	id, err := strconv.Atoi(idStr)
-	if err != nil {
-		http.Error(w, "Invalid task ID", http.StatusBadRequest)
+	id := chi.URLParam(r, "id")
+	if _, err := uuid.Parse(id); err != nil {
+		http.Error(w, "Invalid task ID format", http.StatusBadRequest)
 		return
 	}
 

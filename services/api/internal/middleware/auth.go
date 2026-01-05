@@ -20,8 +20,8 @@ func Auth(store *sessions.CookieStore) func(http.Handler) http.Handler {
 				return
 			}
 
-			userID, ok := session.Values["user_id"].(int)
-			if !ok || userID == 0 {
+			userID, ok := session.Values["user_id"].(string)
+			if !ok || userID == "" {
 				http.Error(w, "Unauthorized", http.StatusUnauthorized)
 				return
 			}
@@ -33,7 +33,7 @@ func Auth(store *sessions.CookieStore) func(http.Handler) http.Handler {
 	}
 }
 
-func GetUserID(ctx context.Context) (int, bool) {
-	userID, ok := ctx.Value(userIDKey).(int)
+func GetUserID(ctx context.Context) (string, bool) {
+	userID, ok := ctx.Value(userIDKey).(string)
 	return userID, ok
 }

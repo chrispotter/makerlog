@@ -3,13 +3,13 @@ package handlers
 import (
 	"encoding/json"
 	"net/http"
-	"strconv"
 	"time"
 
 	"github.com/chrispotter/makerlog/services/api/internal/database"
 	"github.com/chrispotter/makerlog/services/api/internal/middleware"
 	"github.com/chrispotter/makerlog/services/api/internal/models"
 	"github.com/go-chi/chi/v5"
+	"github.com/google/uuid"
 )
 
 type LogEntryHandler struct {
@@ -28,12 +28,13 @@ func (h *LogEntryHandler) List(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Optional project_id filter
-	var projectID *int
+	var projectID *string
 	if projectIDStr := r.URL.Query().Get("project_id"); projectIDStr != "" {
-		id, err := strconv.Atoi(projectIDStr)
-		if err == nil {
-			projectID = &id
+		if _, err := uuid.Parse(projectIDStr); err != nil {
+			http.Error(w, "Invalid project_id format", http.StatusBadRequest)
+			return
 		}
+		projectID = &projectIDStr
 	}
 
 	logEntries, err := h.queries.ListLogEntries(userID, projectID)
@@ -62,6 +63,20 @@ func (h *LogEntryHandler) Create(w http.ResponseWriter, r *http.Request) {
 	if req.Content == "" {
 		http.Error(w, "Content is required", http.StatusBadRequest)
 		return
+	}
+
+	// Validate optional UUID fields
+	if req.TaskID != nil {
+		if _, err := uuid.Parse(*req.TaskID); err != nil {
+			http.Error(w, "Invalid task_id format", http.StatusBadRequest)
+			return
+		}
+	}
+	if req.ProjectID != nil {
+		if _, err := uuid.Parse(*req.ProjectID); err != nil {
+			http.Error(w, "Invalid project_id format", http.StatusBadRequest)
+			return
+		}
 	}
 
 	// Parse log date
@@ -95,10 +110,9 @@ func (h *LogEntryHandler) Get(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	idStr := chi.URLParam(r, "id")
-	id, err := strconv.Atoi(idStr)
-	if err != nil {
-		http.Error(w, "Invalid log entry ID", http.StatusBadRequest)
+	id := chi.URLParam(r, "id")
+	if _, err := uuid.Parse(id); err != nil {
+		http.Error(w, "Invalid log entry ID format", http.StatusBadRequest)
 		return
 	}
 
@@ -123,10 +137,9 @@ func (h *LogEntryHandler) Update(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	idStr := chi.URLParam(r, "id")
-	id, err := strconv.Atoi(idStr)
-	if err != nil {
-		http.Error(w, "Invalid log entry ID", http.StatusBadRequest)
+	id := chi.URLParam(r, "id")
+	if _, err := uuid.Parse(id); err != nil {
+		http.Error(w, "Invalid log entry ID format", http.StatusBadRequest)
 		return
 	}
 
@@ -169,10 +182,9 @@ func (h *LogEntryHandler) Delete(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	idStr := chi.URLParam(r, "id")
-	id, err := strconv.Atoi(idStr)
-	if err != nil {
-		http.Error(w, "Invalid log entry ID", http.StatusBadRequest)
+	id := chi.URLParam(r, "id")
+	if _, err := uuid.Parse(id); err != nil {
+		http.Error(w, "Invalid log entry ID format", http.StatusBadRequest)
 		return
 	}
 

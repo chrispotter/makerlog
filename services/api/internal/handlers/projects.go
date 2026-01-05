@@ -3,12 +3,12 @@ package handlers
 import (
 	"encoding/json"
 	"net/http"
-	"strconv"
 
 	"github.com/chrispotter/makerlog/services/api/internal/database"
 	"github.com/chrispotter/makerlog/services/api/internal/middleware"
 	"github.com/chrispotter/makerlog/services/api/internal/models"
 	"github.com/go-chi/chi/v5"
+	"github.com/google/uuid"
 )
 
 type ProjectHandler struct {
@@ -72,10 +72,9 @@ func (h *ProjectHandler) Get(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	idStr := chi.URLParam(r, "id")
-	id, err := strconv.Atoi(idStr)
-	if err != nil {
-		http.Error(w, "Invalid project ID", http.StatusBadRequest)
+	id := chi.URLParam(r, "id")
+	if _, err := uuid.Parse(id); err != nil {
+		http.Error(w, "Invalid project ID format", http.StatusBadRequest)
 		return
 	}
 
@@ -100,10 +99,9 @@ func (h *ProjectHandler) Update(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	idStr := chi.URLParam(r, "id")
-	id, err := strconv.Atoi(idStr)
-	if err != nil {
-		http.Error(w, "Invalid project ID", http.StatusBadRequest)
+	id := chi.URLParam(r, "id")
+	if _, err := uuid.Parse(id); err != nil {
+		http.Error(w, "Invalid project ID format", http.StatusBadRequest)
 		return
 	}
 
@@ -139,10 +137,9 @@ func (h *ProjectHandler) Delete(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	idStr := chi.URLParam(r, "id")
-	id, err := strconv.Atoi(idStr)
-	if err != nil {
-		http.Error(w, "Invalid project ID", http.StatusBadRequest)
+	id := chi.URLParam(r, "id")
+	if _, err := uuid.Parse(id); err != nil {
+		http.Error(w, "Invalid project ID format", http.StatusBadRequest)
 		return
 	}
 
