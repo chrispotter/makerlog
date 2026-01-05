@@ -101,7 +101,7 @@ func (h *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Verify password
-	if err := bcrypt.CompareHashAndPassword([]byte(user.PasswordHash), []byte(req.Password)); err != nil {
+	if errCompare := bcrypt.CompareHashAndPassword([]byte(user.PasswordHash), []byte(req.Password)); errCompare != nil {
 		http.Error(w, "Invalid credentials", http.StatusUnauthorized)
 		return
 	}
