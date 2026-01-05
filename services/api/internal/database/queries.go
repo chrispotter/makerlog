@@ -5,7 +5,6 @@ import (
 	"time"
 
 	"github.com/chrispotter/makerlog/services/api/internal/models"
-	"github.com/google/uuid"
 )
 
 type Queries struct {
@@ -19,12 +18,11 @@ func New(db *sql.DB) *Queries {
 // User queries
 func (q *Queries) CreateUser(email, passwordHash, name string) (*models.User, error) {
 	var user models.User
-	id := uuid.New().String()
 	err := q.db.QueryRow(`
-		INSERT INTO users (id, email, password_hash, name, created_at, updated_at)
-		VALUES ($1, $2, $3, $4, NOW(), NOW())
+		INSERT INTO users (email, password_hash, name, created_at, updated_at)
+		VALUES ($1, $2, $3, NOW(), NOW())
 		RETURNING id, email, password_hash, name, created_at, updated_at
-	`, id, email, passwordHash, name).Scan(
+	`, email, passwordHash, name).Scan(
 		&user.ID, &user.Email, &user.PasswordHash, &user.Name, &user.CreatedAt, &user.UpdatedAt,
 	)
 	return &user, err
@@ -61,12 +59,11 @@ func (q *Queries) GetUserByID(id string) (*models.User, error) {
 // Project queries
 func (q *Queries) CreateProject(userID string, name, description string) (*models.Project, error) {
 	var project models.Project
-	id := uuid.New().String()
 	err := q.db.QueryRow(`
-		INSERT INTO projects (id, user_id, name, description, created_at, updated_at)
-		VALUES ($1, $2, $3, $4, NOW(), NOW())
+		INSERT INTO projects (user_id, name, description, created_at, updated_at)
+		VALUES ($1, $2, $3, NOW(), NOW())
 		RETURNING id, user_id, name, description, created_at, updated_at
-	`, id, userID, name, description).Scan(
+	`, userID, name, description).Scan(
 		&project.ID, &project.UserID, &project.Name, &project.Description, &project.CreatedAt, &project.UpdatedAt,
 	)
 	return &project, err
@@ -143,12 +140,11 @@ func (q *Queries) DeleteProject(id, userID string) error {
 // Task queries
 func (q *Queries) CreateTask(userID, projectID string, title, description, status string) (*models.Task, error) {
 	var task models.Task
-	id := uuid.New().String()
 	err := q.db.QueryRow(`
-		INSERT INTO tasks (id, user_id, project_id, title, description, status, created_at, updated_at)
-		VALUES ($1, $2, $3, $4, $5, $6, NOW(), NOW())
+		INSERT INTO tasks (user_id, project_id, title, description, status, created_at, updated_at)
+		VALUES ($1, $2, $3, $4, $5, NOW(), NOW())
 		RETURNING id, user_id, project_id, title, description, status, created_at, updated_at
-	`, id, userID, projectID, title, description, status).Scan(
+	`, userID, projectID, title, description, status).Scan(
 		&task.ID, &task.UserID, &task.ProjectID, &task.Title, &task.Description, &task.Status, &task.CreatedAt, &task.UpdatedAt,
 	)
 	return &task, err
@@ -237,12 +233,11 @@ func (q *Queries) DeleteTask(id, userID string) error {
 // Log entry queries
 func (q *Queries) CreateLogEntry(userID string, taskID, projectID *string, content string, logDate time.Time) (*models.LogEntry, error) {
 	var logEntry models.LogEntry
-	id := uuid.New().String()
 	err := q.db.QueryRow(`
-		INSERT INTO log_entries (id, user_id, task_id, project_id, content, log_date, created_at, updated_at)
-		VALUES ($1, $2, $3, $4, $5, $6, NOW(), NOW())
+		INSERT INTO log_entries (user_id, task_id, project_id, content, log_date, created_at, updated_at)
+		VALUES ($1, $2, $3, $4, $5, NOW(), NOW())
 		RETURNING id, user_id, task_id, project_id, content, log_date, created_at, updated_at
-	`, id, userID, taskID, projectID, content, logDate).Scan(
+	`, userID, taskID, projectID, content, logDate).Scan(
 		&logEntry.ID, &logEntry.UserID, &logEntry.TaskID, &logEntry.ProjectID, &logEntry.Content, &logEntry.LogDate, &logEntry.CreatedAt, &logEntry.UpdatedAt,
 	)
 	return &logEntry, err
