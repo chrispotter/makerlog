@@ -14,6 +14,7 @@ func TestNewAuthHandler(t *testing.T) {
 
 	if handler == nil {
 		t.Error("Expected handler to be created")
+		return
 	}
 	if handler.queries != nil {
 		t.Error("Expected queries to be nil when passed nil")

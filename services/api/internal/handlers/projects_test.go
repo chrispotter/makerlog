@@ -11,6 +11,7 @@ func TestNewProjectHandler(t *testing.T) {
 	handler := NewProjectHandler(nil)
 	if handler == nil {
 		t.Error("Expected handler to be created")
+		return
 	}
 	if handler.queries != nil {
 		t.Error("Expected queries to be nil when passed nil")
